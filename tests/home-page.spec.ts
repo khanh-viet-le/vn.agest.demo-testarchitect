@@ -1,6 +1,7 @@
 import test from "@/fixtures";
 import { expect } from "@playwright/test";
 import homepageElementData from "@datasets/homepage-element.dataset.json";
+import searchProductsData from "@datasets/search-products.dataset.json";
 
 test("TC_01: Verify Homepage Elements Are Visible", async ({ homePage }) => {
   // 1. Navigate to https://demo.testarchitect.com/

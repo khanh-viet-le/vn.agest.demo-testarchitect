@@ -1,30 +1,53 @@
 import { Locator, Page } from "@playwright/test";
+import { Product } from "@models/product.model";
+import { CategoryConstants } from "@constants/category.constant";
+import { Category } from "@models/category.model";
 
 export class HomePage {
+  //
   private static ROUTE = "/";
   private page: Page;
+  // SALE POPUP
   private salesPopupLocator: Locator;
   private closeSalesPopupButtonLocator: Locator;
+
+  // COOKIE NOTICE
   private cookiePopupLocator: Locator;
   private acceptCookiesButtonLocator: Locator;
+
+  // HEADER (IN CROSS-DEVICE)
   private headerLocator: Locator;
+
+  // TOP HEADER
   private topHeaderLocator: Locator;
   private contactNumberTextLocator: Locator;
   private addressTextLocator: Locator;
   private loginOrSignupButtonLocator: Locator;
-  private mainNavLocator: Locator;
-  private mainNavItemsLocator: Locator;
   private socailListsLocator: Locator;
   private socialItemLocator: Locator;
+
+  // MAIN HEADER
+  private mainHeaderLocator: Locator;
+  private categoryMenuLocator: Locator;
+  private searchInputLocator: Locator;
+  private searchButtonLocator: Locator;
+
+  // MAIN NAVIGATION (BOTTOM HEADER)
+  private mainNavLocator: Locator;
+  private mainNavItemsLocator: Locator;
+
+  // PRODUCT LIST
+  private productItemLocator: Locator;
+  private productCategoryLocator: Locator;
+  private productTitleLocator: Locator;
 
   constructor(page: Page, isMobile: boolean = false) {
     this.page = page;
 
     // SALE POPUP
     this.salesPopupLocator = this.page.locator("#sales-booster-popup");
-    this.closeSalesPopupButtonLocator = this.salesPopupLocator.locator(
-      "//*[contains(@class, 'close')]"
-    );
+    this.closeSalesPopupButtonLocator =
+      this.salesPopupLocator.locator(".close");
 
     // COOKIE NOTICE
     this.cookiePopupLocator = this.page.getByRole("dialog", {
@@ -40,19 +63,13 @@ export class HomePage {
 
     // HEADER (IN CROSS-DEVICE)
     if (isMobile) {
-      this.headerLocator = this.page.locator(
-        "//*[contains(@class , 'header-mobile-wrapper')]"
-      );
+      this.headerLocator = this.page.locator(".header-mobile-wrapper");
     } else {
-      this.headerLocator = this.page.locator(
-        "//*[contains(@class , 'header-wrapper')]"
-      );
+      this.headerLocator = this.page.locator(".header-wrapper");
     }
 
-    //   TOP HEADER
-    this.topHeaderLocator = this.headerLocator.locator(
-      "//*[contains(@class , 'header-top-wrapper ')]"
-    );
+    // TOP HEADER
+    this.topHeaderLocator = this.headerLocator.locator(".header-top-wrapper");
     this.contactNumberTextLocator = this.topHeaderLocator.locator(
       "//*[contains(@class, 'et_element ') and ./i][1]"
     );
@@ -62,16 +79,33 @@ export class HomePage {
     this.loginOrSignupButtonLocator = this.topHeaderLocator.getByRole("link", {
       name: "Log in / Sign up",
     });
-    this.socailListsLocator = this.topHeaderLocator.locator(
-      "//*[contains(@class , 'et-socials ')]"
-    );
+    this.socailListsLocator = this.topHeaderLocator.locator(".et-socials");
     this.socialItemLocator = this.socailListsLocator.getByRole("link");
 
-    // MAIN NAVIGATION (BOTTOM HEADER)
-    this.mainNavLocator = this.headerLocator.locator(
-      "//*[contains(@class , 'header-bottom-wrapper ')]"
+    // MAIN HEADER
+    this.mainHeaderLocator = this.headerLocator.locator(".header-main-wrapper");
+    this.categoryMenuLocator = this.mainHeaderLocator.locator(
+      "//select[@name='product_cat']"
     );
+    this.searchInputLocator = this.mainHeaderLocator.getByRole("textbox", {
+      name: "s",
+    });
+    this.searchButtonLocator = this.mainHeaderLocator.locator(
+      "button.search-button"
+    );
+
+    // MAIN NAVIGATION (BOTTOM HEADER)
+    this.mainNavLocator = this.headerLocator.locator(".header-bottom-wrapper");
     this.mainNavItemsLocator = this.mainNavLocator.getByRole("listitem");
+
+    // PRODUCT LIST
+    this.productItemLocator = this.page
+      .locator(".products")
+      .locator(".product");
+    this.productCategoryLocator = this.productItemLocator.locator(
+      ".products-page-cats a"
+    );
+    this.productTitleLocator = this.page.locator(".product-title a");
   }
 
   async goto() {
@@ -140,5 +174,37 @@ export class HomePage {
   async isMainMenuItemClickable(menuItemName: string) {
     const mainMenuItemLocator = this.getMainMenuItemLocatorByName(menuItemName);
     return await mainMenuItemLocator.isEnabled();
+  }
+
+  async searchProduct(product: Product): Promise<Product[]> {
+    await this.categoryMenuLocator.selectOption({
+      label: product.category?.name ?? CategoryConstants.ALL_CATEGORIES,
+    });
+    await this.searchInputLocator.fill(product.title);
+    await this.searchButtonLocator.click();
+
+    return this.getProductList();
+  }
+
+  async getProductList(): Promise<Product[]> {
+    const productItems = await this.productItemLocator.all();
+    const products: Product[] = [];
+
+    for (const item of productItems) {
+      const title =
+        (await item.locator(this.productTitleLocator).textContent()) ?? "";
+      const categoryName = await item
+        .locator(this.productCategoryLocator)
+        .textContent();
+
+      const category = categoryName
+        ? new Category(categoryName.trim())
+        : undefined;
+      const product = new Product(title, category);
+
+      products.push(product);
+    }
+
+    return products;
   }
 }

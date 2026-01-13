@@ -15,10 +15,11 @@
     "paths": {
       "@/*": ["./*"],
       "@tests/*": ["./tests/*"],
+      "@datasets/*": ["./datasets/*"],
       "@pages/*": ["./src/pages/*"],
       "@utils/*": ["./src/utils/*"],
       "@models/*": ["./src/models/*"],
-      "@datasets/*": ["./datasets/*"]
+      "@constants/*": ["./src/constants/*"]
     }
   },
   "include": ["**/*.ts", "**/*.js", "**/*.json"],
