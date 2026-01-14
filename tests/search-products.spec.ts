@@ -29,12 +29,16 @@ test.describe("TC_02: Verify Product Search Functionality Works", async () => {
 
       // 9. Observe search results page
       // - Search results should load
+      expect.soft(matchedProducts.length).toBeGreaterThan(0);
+
       // - URL should contain search term "s=product.title"
       await expect.soft(page).toHaveURL(new RegExp(`s=${searchProduct.title}`));
 
       // - Products related to "product.title" should be displayed
       const matchedCount = matchedProducts.filter((product) => {
-        return product.title.includes(searchProduct.title);
+        return product.title
+          .toLowerCase()
+          .includes(searchProduct.title.toLowerCase());
       }).length;
 
       expect(matchedCount).toEqual(matchedProducts.length);

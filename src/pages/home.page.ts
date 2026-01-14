@@ -99,12 +99,9 @@ export class HomePage {
     this.mainNavItemsLocator = this.mainNavLocator.getByRole("listitem");
 
     // PRODUCT LIST
-    this.productItemLocator = this.page
-      .locator(".products")
-      .locator(".product");
-    this.productCategoryLocator = this.productItemLocator.locator(
-      ".products-page-cats a"
-    );
+    this.productItemLocator = this.page.locator(".products .product");
+    // .locator("");
+    this.productCategoryLocator = this.page.locator(".products-page-cats a");
     this.productTitleLocator = this.page.locator(".product-title a");
   }
 
@@ -183,11 +180,13 @@ export class HomePage {
     await this.searchInputLocator.fill(product.title);
     await this.searchButtonLocator.click();
 
-    return this.getProductList();
+    return await this.getProductList();
   }
 
   async getProductList(): Promise<Product[]> {
+    await this.productItemLocator.first().waitFor({ timeout: 10000 });
     const productItems = await this.productItemLocator.all();
+
     const products: Product[] = [];
 
     for (const item of productItems) {
