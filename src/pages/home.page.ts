@@ -2,11 +2,12 @@ import { Locator, Page } from "@playwright/test";
 import { Product } from "@models/product.model";
 import { CategoryConstants } from "@constants/category.constant";
 import { Category } from "@models/category.model";
+import { RouteConstants } from "@constants/route.constants";
+import { CategoryPage } from "./category.page";
 
 export class HomePage {
-  //
-  private static ROUTE = "/";
   private page: Page;
+
   // SALE POPUP
   private salesPopupLocator: Locator;
   private closeSalesPopupButtonLocator: Locator;
@@ -35,6 +36,8 @@ export class HomePage {
   // MAIN NAVIGATION (BOTTOM HEADER)
   private mainNavLocator: Locator;
   private mainNavItemsLocator: Locator;
+  private catMenuLocator: Locator;
+  private catMenuItemsLocator: Locator;
 
   // PRODUCT LIST
   private productItemLocator: Locator;
@@ -97,16 +100,23 @@ export class HomePage {
     // MAIN NAVIGATION (BOTTOM HEADER)
     this.mainNavLocator = this.headerLocator.locator(".header-bottom-wrapper");
     this.mainNavItemsLocator = this.mainNavLocator.getByRole("listitem");
+    this.catMenuLocator = this.mainNavLocator.locator(".header-secondary-menu");
+    this.catMenuItemsLocator = this.catMenuLocator.getByRole("link");
 
     // PRODUCT LIST
-    this.productItemLocator = this.page.locator(".products .product");
-    // .locator("");
-    this.productCategoryLocator = this.page.locator(".products-page-cats a");
-    this.productTitleLocator = this.page.locator(".product-title a");
+    this.productItemLocator = this.page
+      .locator(".products")
+      .locator(".product");
+    this.productCategoryLocator = this.page
+      .locator(".products-page-cats")
+      .getByRole("link");
+    this.productTitleLocator = this.page
+      .locator(".product-title")
+      .getByRole("link");
   }
 
   async goto() {
-    await this.page.goto(HomePage.ROUTE);
+    await this.page.goto(RouteConstants.HOME);
   }
 
   async closeSalesPopupIfVisible() {
@@ -205,5 +215,27 @@ export class HomePage {
     }
 
     return products;
+  }
+
+  async localeToMainCategoriesMenu() {
+    await this.catMenuLocator.hover();
+  }
+
+  async navigateToCategoryPage(category: Category): Promise<CategoryPage> {
+    const categoryLinkLocator = this.catMenuItemsLocator.filter({
+      hasText: category.name,
+    });
+
+    await categoryLinkLocator.click();
+
+    return new CategoryPage(this.page);
+  }
+
+  async isCategoryPresentInMainMenu(category: Category): Promise<boolean> {
+    const categoryLinkLocator = this.catMenuItemsLocator.filter({
+      hasText: category.name,
+    });
+
+    return await categoryLinkLocator.isVisible();
   }
 }
