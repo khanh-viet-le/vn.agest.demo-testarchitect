@@ -22,7 +22,9 @@ export class ProductPage {
       name: "Add to Cart",
     });
     this.messageLocator = this.page.locator(".et-notify");
-    this.cartCountLocator = this.page.locator(".et-cart-quantity").first();
+    this.cartCountLocator = this.page.locator(
+      ".header-wrapper span ~ .et-cart-quantity"
+    );
 
     // CART POPUP
     this.productsInCartLocator = this.page
@@ -39,6 +41,7 @@ export class ProductPage {
   async addToCart(amount: number = 1) {
     await this.amountInputLocator.fill(amount.toString());
     await this.addToCartButtonLocator.click();
+    await this.messageLocator.waitFor({ state: "visible" });
   }
 
   async getMessageStatus(): Promise<MessageStatusConstants> {
@@ -72,7 +75,13 @@ export class ProductPage {
   }
 
   async getCartCount(): Promise<number> {
+    await this.cartCountLocator.waitFor({ state: "attached" });
+
+    if (!(await this.cartCountLocator.isVisible())) {
+      await this.cartCountLocator.scrollIntoViewIfNeeded();
+    }
+
     const countText = await this.cartCountLocator.textContent();
-    return countText ? parseInt(countText, 10) : 0;
+    return countText ? parseInt(countText.trim(), 10) : 0;
   }
 }

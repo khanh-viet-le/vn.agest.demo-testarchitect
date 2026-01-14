@@ -3,12 +3,14 @@ import { HomePage } from "@pages/home.page";
 import { ShopPage } from "@pages/shop.page";
 import { ProductPage } from "@pages/product.page";
 import { CategoryPage } from "@pages/category.page";
+import { CartPage } from "./src/pages/cart.page";
 
 type MyFixtures = {
   homePage: HomePage;
   shopPage: ShopPage;
   productPage: ProductPage;
   categoryPage: CategoryPage;
+  cartPage: CartPage;
 };
 
 const test = base.extend<MyFixtures>({
@@ -27,6 +29,10 @@ const test = base.extend<MyFixtures>({
   categoryPage: async ({ page }, use) => {
     const categoryPage = new CategoryPage(page);
     await use(categoryPage);
+  },
+  cartPage: async ({ page }, use) => {
+    const cartPage = new CartPage(page);
+    await use(cartPage);
   },
 });
 
