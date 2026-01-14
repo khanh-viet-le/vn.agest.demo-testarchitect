@@ -23,12 +23,19 @@ test("TC_04: Verify Product Can Be Added to Shopping Cart", async ({
   // 5. Check cart icon update
   // - Product should be added to cart
   const productsInCart = await productPage.getProductsInCart();
-  expect.soft(productsInCart).toContainEqual(shownProduct);
+  expect
+    .soft(
+      productsInCart.find((product) => product.title === shownProduct.title)
+    )
+    .toBeTruthy();
 
   // - Cart count should increase
-  // - Cart total should update
   const newCartCount = await productPage.getCartCount();
   expect.soft(newCartCount).toBe(oldCartCount + 1);
+
+  // - Cart total should update
+  const newCartTotalPrice = await productPage.getCartTotalPrice();
+  expect.soft(newCartTotalPrice).toBe(shownProduct.price);
 
   // - Success message should appear
   expect

@@ -6,16 +6,19 @@ import { MessageStatusConstants } from "@constants/message-status.constants";
 export class ProductPage {
   private page: Page;
   private productTitleLocator: Locator;
+  private productPriceLocator: Locator;
   private amountInputLocator: Locator;
   private addToCartButtonLocator: Locator;
   private messageLocator: Locator;
   private cartCountLocator: Locator;
   private productsInCartLocator: Locator;
   private productTitleInCartLocator: Locator;
+  private cartTotalPriceLocator: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.productTitleLocator = this.page.locator("h1.product_title");
+    this.productPriceLocator = this.page.locator("h1.product_title ~ .price");
 
     this.amountInputLocator = this.page.locator("input[name=quantity]");
     this.addToCartButtonLocator = this.page.getByRole("button", {
@@ -32,6 +35,9 @@ export class ProductPage {
       .getByRole("listitem");
 
     this.productTitleInCartLocator = this.page.locator(".product-title");
+    this.cartTotalPriceLocator = this.page
+      .locator(".header-wrapper")
+      .locator(".big-coast");
   }
 
   async goto(product: Product) {
@@ -69,8 +75,13 @@ export class ProductPage {
   async getProduct(): Promise<Product> {
     await this.productTitleLocator.waitFor({ timeout: 10000 });
     const title = (await this.productTitleLocator.textContent()) ?? "";
+    let price: number | string =
+      (await this.productPriceLocator.textContent()) ?? "";
+
+    price = price ? parseInt(price.replace(/[^\d.]/g, "")) : 0;
 
     const product = new Product(title);
+    product.price = price;
     return product;
   }
 
@@ -83,5 +94,12 @@ export class ProductPage {
 
     const countText = await this.cartCountLocator.textContent();
     return countText ? parseInt(countText.trim(), 10) : 0;
+  }
+
+  async getCartTotalPrice(): Promise<number> {
+    const rawText = await this.cartTotalPriceLocator.textContent();
+    const totalPrice = rawText ? parseFloat(rawText.replace(/[^\d.]/g, "")) : 0;
+
+    return Number.isNaN(totalPrice) ? 0 : totalPrice;
   }
 }

@@ -3,6 +3,7 @@ import { Category } from "@models/category.model";
 export class Product {
   private _title: string;
   private _slug: string;
+  private _price: number;
   private _category?: Category;
 
   get title() {
@@ -29,18 +30,23 @@ export class Product {
     this._category = val;
   }
 
-  constructor(title: string, category?: Category, slug: string = "") {
+  get price() {
+    return this._price;
+  }
+
+  set price(val: number) {
+    this._price = Number.isNaN(val) ? 0 : val;
+  }
+
+  constructor(
+    title: string,
+    category?: Category,
+    slug: string = "",
+    price: number = 0
+  ) {
     this._title = title;
     this._category = category;
     this._slug = slug;
-  }
-
-  /**
-   * Checks if this product is equal to another based on title
-   * @param other - The other Product to compare with.
-   * @returns True if titles match, false otherwise.
-   */
-  equals(other: Product): boolean {
-    return this.title === other.title;
+    this._price = price;
   }
 }
