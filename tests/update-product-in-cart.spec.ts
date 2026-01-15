@@ -19,7 +19,7 @@ test("TC_05: Verify Product Quantity Can Be Updated in Cart", async ({
   await cartPage.goto();
 
   const oldQuantity = await cartPage.getFirstAvailableProductQuantity();
-  const oldCartCount = await productPage.getCartCount();
+  const oldCartTotal = await cartPage.getCartTotal();
   const updatedQuantity = 2;
 
   // 2. Locate quantity field
@@ -32,11 +32,11 @@ test("TC_05: Verify Product Quantity Can Be Updated in Cart", async ({
   expect((await cartPage.getMessage()).length).toBeGreaterThan(0);
 
   const newQuantity = await cartPage.getFirstAvailableProductQuantity();
-  const newCartCount = await productPage.getCartCount();
+  const newCartTotal = await cartPage.getCartTotal();
 
   // - Quantity should update
   expect.soft(newQuantity).toBe(updatedQuantity);
 
   // - Cart total should recalculate
-  expect.soft(newCartCount).toBe(oldCartCount - oldQuantity + newQuantity);
+  expect.soft(newCartTotal).toBe(oldCartTotal * updatedQuantity);
 });

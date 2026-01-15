@@ -1,5 +1,0 @@
-export enum DeliveryOption {
-  DIRECT_BANK_TRANSFER,
-  CHECK_PAYMENTS,
-  CASH_ON_DELIVERY,
-}

@@ -1,0 +1,18 @@
+[
+  {
+    "billingInfo": {
+      "firstName": "John",
+      "lassName": "Doe",
+      "companyName": "Doe Technologies",
+      "countryOrRegion": "United States",
+      "streetAddress": "123 Main Street",
+      "townOrCity": "San Francisco",
+      "state": "CA",
+      "zipCode": "94105",
+      "phone": "+1-415-555-0123",
+      "email": "john.doe@example.com",
+      "orderNotes": "Please deliver during business hours."
+    },
+    "paymentMethod": "CHECK_PAYMENTS"
+  }
+]

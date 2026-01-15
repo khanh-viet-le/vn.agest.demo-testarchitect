@@ -2,6 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { Product } from "@models/product.model";
 import { MessageStatusConstants } from "@constants/message-status.constants";
+import { extractNumbers } from "../utils/text-helper.util";
 
 export class ProductPage {
   private page: Page;
@@ -78,7 +79,7 @@ export class ProductPage {
     let price: number | string =
       (await this.productPriceLocator.textContent()) ?? "";
 
-    price = price ? parseInt(price.replace(/[^\d.]/g, "")) : 0;
+    price = extractNumbers(price)[0] ?? 0;
 
     const product = new Product(title);
     product.price = price;
@@ -92,14 +93,15 @@ export class ProductPage {
       await this.cartCountLocator.scrollIntoViewIfNeeded();
     }
 
-    const countText = await this.cartCountLocator.textContent();
-    return countText ? parseInt(countText.trim(), 10) : 0;
+    const countText = (await this.cartCountLocator.textContent()) ?? "";
+    const count = extractNumbers(countText)[0] ?? 0;
+    return count;
   }
 
   async getCartTotalPrice(): Promise<number> {
-    const rawText = await this.cartTotalPriceLocator.textContent();
-    const totalPrice = rawText ? parseFloat(rawText.replace(/[^\d.]/g, "")) : 0;
+    const rawText = (await this.cartTotalPriceLocator.textContent()) ?? "";
+    const totalPrice = extractNumbers(rawText)[0] ?? 0;
 
-    return Number.isNaN(totalPrice) ? 0 : totalPrice;
+    return totalPrice;
   }
 }

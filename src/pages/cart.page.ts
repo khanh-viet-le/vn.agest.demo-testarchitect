@@ -1,5 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "../constants/route.constants";
+import { CheckoutPage } from "./checkout.page";
+import { extractNumbers } from "../utils/text-helper.util";
 
 export class CartPage {
   private page: Page;
@@ -8,6 +10,8 @@ export class CartPage {
   private messageLocator: Locator;
   private clearCartButtonLocator: Locator;
   private cartEmptyTitleLocator: Locator;
+  private proceedToCheckoutButtonLocator: Locator;
+  private cartTotalLocator: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -21,6 +25,10 @@ export class CartPage {
       level: 1,
       name: "YOUR SHOPPING CART IS EMPTY",
     });
+    this.proceedToCheckoutButtonLocator = this.page.getByRole("link", {
+      name: "Proceed to checkout",
+    });
+    this.cartTotalLocator = this.page.locator(".cart-subtotal");
   }
 
   async goto() {
@@ -39,7 +47,9 @@ export class CartPage {
       .first()
       .inputValue();
 
-    return rawText ? parseInt(rawText, 10) : 0;
+    const quantity = extractNumbers(rawText)[0] ?? 0;
+
+    return quantity;
   }
 
   async getMessage() {
@@ -53,5 +63,18 @@ export class CartPage {
 
   async isCartEmpty() {
     return await this.cartEmptyTitleLocator.isVisible();
+  }
+
+  async proceedToCheckout(): Promise<CheckoutPage> {
+    await this.proceedToCheckoutButtonLocator.click();
+
+    return new CheckoutPage(this.page);
+  }
+
+  async getCartTotal() {
+    const rawText = (await this.cartTotalLocator.textContent()) ?? "";
+    const total = extractNumbers(rawText)[0] ?? 0;
+
+    return total;
   }
 }
