@@ -1,0 +1,51 @@
+[
+  {
+    "firstName": "John",
+    "lassName": "Doe",
+    "companyName": "Doe Technologies",
+    "countryOrRegion": "United States",
+    "streetAddress": "123 Main Street",
+    "townOrCity": "San Francisco",
+    "state": "CA",
+    "zipCode": "94105",
+    "phone": "+1-415-555-0123",
+    "email": "john.doe@example.com",
+    "orderNotes": "Please deliver during business hours."
+  },
+  {
+    "firstName": "Emily",
+    "lassName": "Clark",
+    "countryOrRegion": "Canada",
+    "streetAddress": "456 Maple Avenue",
+    "streetAddressExtra": "Apt 7B",
+    "townOrCity": "Toronto",
+    "state": "ON",
+    "zipCode": "M5V 2T6",
+    "phone": "+1-647-555-8899",
+    "email": "emily.clark@example.ca"
+  },
+  {
+    "firstName": "Michael",
+    "lassName": "Nguyen",
+    "companyName": "Nguyen Consulting",
+    "countryOrRegion": "Australia",
+    "streetAddress": "78 Harbour Road",
+    "townOrCity": "Sydney",
+    "state": "NSW",
+    "zipCode": "2000",
+    "phone": "+61-2-5550-3321",
+    "email": "michael.nguyen@example.au"
+  },
+  {
+    "firstName": "Sophia",
+    "lassName": "Rossi",
+    "countryOrRegion": "Italy",
+    "streetAddress": "Via Roma 21",
+    "townOrCity": "Milan",
+    "state": "MI",
+    "zipCode": "20121",
+    "phone": "+39-02-555-7788",
+    "email": "sophia.rossi@example.it",
+    "orderNotes": "Leave package with concierge if unavailable."
+  }
+]

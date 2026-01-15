@@ -1,0 +1,31 @@
+[
+  {
+    "fieldName": "First name"
+  },
+  {
+    "fieldName": "Last name"
+  },
+  {
+    "fieldName": "Country / Region",
+    "defaultValue": "United States (US)"
+  },
+  {
+    "fieldName": "Street address"
+  },
+  {
+    "fieldName": "Town / City"
+  },
+  {
+    "fieldName": "State",
+    "defaultValue": "California"
+  },
+  {
+    "fieldName": "ZIP Code"
+  },
+  {
+    "fieldName": "Phone"
+  },
+  {
+    "fieldName": "Email address"
+  }
+]

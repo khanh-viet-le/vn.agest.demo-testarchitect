@@ -4,4 +4,5 @@ export enum RouteConstants {
   SHOP = "/shop",
   PRODUCT = "/product",
   CART = "/cart",
+  CHECKOUT = "/checkout",
 }
