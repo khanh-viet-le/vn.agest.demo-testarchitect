@@ -5,6 +5,7 @@ import { ProductPage } from "@pages/product.page";
 import { CategoryPage } from "@pages/category.page";
 import { CartPage } from "@pages/cart.page";
 import { CheckoutPage } from "@pages/checkout.page";
+import { LoginPage } from "./src/pages/login.page";
 
 type MyFixtures = {
   homePage: HomePage;
@@ -13,6 +14,7 @@ type MyFixtures = {
   categoryPage: CategoryPage;
   cartPage: CartPage;
   checkoutPage: CheckoutPage;
+  loginPage: LoginPage;
 };
 
 const test = base.extend<MyFixtures>({
@@ -39,6 +41,10 @@ const test = base.extend<MyFixtures>({
   checkoutPage: async ({ page }, use) => {
     const checkoutPage = new CheckoutPage(page);
     await use(checkoutPage);
+  },
+  loginPage: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await use(loginPage);
   },
 });
 

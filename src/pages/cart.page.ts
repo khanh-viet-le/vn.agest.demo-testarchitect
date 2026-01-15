@@ -6,6 +6,8 @@ export class CartPage {
   private productQuantityInputLocatior: Locator;
   private updateCartButtonLocator: Locator;
   private messageLocator: Locator;
+  private clearCartButtonLocator: Locator;
+  private cartEmptyTitleLocator: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -14,6 +16,11 @@ export class CartPage {
       name: "Update cart",
     });
     this.messageLocator = this.page.locator("*[role=alert]");
+    this.clearCartButtonLocator = this.page.locator(".clear-cart");
+    this.cartEmptyTitleLocator = this.page.getByRole("heading", {
+      level: 1,
+      name: "YOUR SHOPPING CART IS EMPTY",
+    });
   }
 
   async goto() {
@@ -37,5 +44,14 @@ export class CartPage {
 
   async getMessage() {
     return (await this.messageLocator.textContent()) ?? "";
+  }
+
+  async clearCart() {
+    this.page.on("dialog", (dialog) => dialog.accept());
+    await this.clearCartButtonLocator.click();
+  }
+
+  async isCartEmpty() {
+    return await this.cartEmptyTitleLocator.isVisible();
   }
 }
