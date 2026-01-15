@@ -1,21 +1,18 @@
 import test from "@/fixtures";
 import { IOrderInfo } from "@/src/interfaces/order-info.interface";
-import { PaymentMethod } from "@constants/payment-method.constants";
 import { expect } from "@playwright/test";
 import { getDataset } from "@utils/data-helper";
 
 const orderInfoList = getDataset<IOrderInfo>("order-info");
 
 // Products in cart
-test.beforeEach(async ({ shopPage, homePage, checkoutPage }) => {
+test.beforeEach(async ({ shopPage, homePage }) => {
   await shopPage.goto();
   await homePage.closeSalesPopupIfVisible();
   await homePage.acceptCookiesIfVisible();
 
   const productPage = await shopPage.selectFirstAvailableProduct();
   await productPage.addToCart();
-
-  await checkoutPage.goto();
 });
 
 test.describe("TC_08: Verify Guest User Can Complete Checkout", async () => {

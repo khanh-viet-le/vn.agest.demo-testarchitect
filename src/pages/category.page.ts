@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import { Category } from "@models/category.model";
-import { RouteConstants } from "../constants/route.constants";
+import { RouteConstants } from "@constants/route.constants";
 
 export class CategoryPage {
   private page: Page;

@@ -1,5 +1,5 @@
-import { PaymentMethod } from "../constants/payment-method.constants";
-import { IBillingInfo } from "./billing-info.interface";
+import { PaymentMethod } from "@constants/payment-method.constants";
+import { IBillingInfo } from "@interfaces/billing-info.interface";
 
 export interface IOrderInfo {
   billingInfo: IBillingInfo;

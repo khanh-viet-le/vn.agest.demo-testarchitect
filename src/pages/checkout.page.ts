@@ -1,8 +1,8 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { PaymentMethod } from "@constants/payment-method.constants";
-import { IOrderInfo } from "../interfaces/order-info.interface";
-import { IBillingInfo } from "../interfaces/billing-info.interface";
+import { IOrderInfo } from "@interfaces/order-info.interface";
+import { IBillingInfo } from "@interfaces/billing-info.interface";
 
 export class CheckoutPage {
   private page: Page;
@@ -118,7 +118,7 @@ export class CheckoutPage {
 
   async isFieldHighlighted(fieldName: string) {
     return await this.invalidWrapperLocator
-      .locator(this.page.getByLabel(fieldName))
+      .locator(this.page.getByLabel(new RegExp(fieldName)))
       .isVisible();
   }
 

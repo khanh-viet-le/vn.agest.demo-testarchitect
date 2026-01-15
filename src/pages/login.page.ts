@@ -1,5 +1,5 @@
 import { Locator, Page } from "@playwright/test";
-import { RouteConstants } from "../constants/route.constants";
+import { RouteConstants } from "@constants/route.constants";
 
 export class LoginPage {
   private page: Page;
@@ -21,7 +21,7 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto(RouteConstants.LOGIN);
+    await this.page.goto(RouteConstants.MY_ACCOUNT);
   }
 
   async login(username: string, password: string) {

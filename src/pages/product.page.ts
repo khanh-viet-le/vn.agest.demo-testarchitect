@@ -2,7 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { Product } from "@models/product.model";
 import { MessageStatusConstants } from "@constants/message-status.constants";
-import { extractNumbers } from "../utils/text-helper.util";
+import { extractNumbers } from "@utils/text-helper.util";
 
 export class ProductPage {
   private page: Page;

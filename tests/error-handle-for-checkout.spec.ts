@@ -7,10 +7,10 @@ import { PaymentMethod } from "@/src/constants/payment-method.constants";
 
 const requiredBillingInfoFields = getDataset<IBillingInfoRequiredField>(
   "billing-info-required-fields"
-);
+).filter((field) => !field.defaultValue);
 
 // User is at checkout
-test.beforeEach(async ({ shopPage, homePage, checkoutPage }) => {
+test.beforeEach(async ({ shopPage, homePage, checkoutPage, page }) => {
   await shopPage.goto();
   await homePage.closeSalesPopupIfVisible();
   await homePage.acceptCookiesIfVisible();
@@ -19,6 +19,7 @@ test.beforeEach(async ({ shopPage, homePage, checkoutPage }) => {
   await productPage.addToCart();
 
   await checkoutPage.goto();
+  await page.waitForLoadState();
 });
 
 test("TC_06: Verify Error Handling for Mandatory Checkout Fields", async ({
@@ -35,16 +36,12 @@ test("TC_06: Verify Error Handling for Mandatory Checkout Fields", async ({
   //   System should highlight missing fields and show an error message
   expect
     .soft(await checkoutPage.getMessages())
-    .toHaveLength(
-      requiredBillingInfoFields.filter((field) => !field.defaultValue).length
-    );
+    .toHaveLength(requiredBillingInfoFields.length);
 
   for (const field of requiredBillingInfoFields) {
-    if (!field.defaultValue) {
-      expect
-        .soft(await checkoutPage.isFieldHasError(field.fieldName))
-        .toBeTruthy();
-    }
+    expect
+      .soft(await checkoutPage.isFieldHasError(field.fieldName))
+      .toBeTruthy();
 
     expect
       .soft(await checkoutPage.isFieldHighlighted(field.fieldName))

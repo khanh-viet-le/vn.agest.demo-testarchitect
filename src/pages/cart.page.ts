@@ -1,7 +1,7 @@
 import { Locator, Page } from "@playwright/test";
-import { RouteConstants } from "../constants/route.constants";
-import { CheckoutPage } from "./checkout.page";
-import { extractNumbers } from "../utils/text-helper.util";
+import { RouteConstants } from "@constants/route.constants";
+import { CheckoutPage } from "@pages/checkout.page";
+import { extractNumbers } from "@utils/text-helper.util";
 
 export class CartPage {
   private page: Page;
