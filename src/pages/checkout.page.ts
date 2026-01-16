@@ -116,10 +116,10 @@ export class CheckoutPage {
     return await this.messageLocator.allTextContents();
   }
 
-  async isFieldHighlighted(fieldName: string) {
+  async getHighlightedFields() {
     return await this.invalidWrapperLocator
-      .locator(this.page.getByLabel(new RegExp(fieldName)))
-      .isVisible();
+      .locator(this.page.locator("label"))
+      .allTextContents();
   }
 
   async isFieldHasError(fieldName: string) {

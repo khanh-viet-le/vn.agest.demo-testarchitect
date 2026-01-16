@@ -2,7 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { MessageStatusConstants } from "@constants/message-status.constants";
 import { Product } from "@models/product.model";
-import { extractNumbers } from "@utils/text-helper.util";
+import { TextHelper } from "@utils/text-helper.util";
 import { BasePage } from "@pages/base.page";
 
 export class ProductPage extends BasePage {
@@ -49,7 +49,7 @@ export class ProductPage extends BasePage {
     let price: number | string =
       (await this.productPriceLocator.textContent()) ?? "";
 
-    price = extractNumbers(price)[0] ?? 0;
+    price = TextHelper.extractNumbers(price)[0] ?? 0;
 
     const product = new Product(title);
     product.price = price;

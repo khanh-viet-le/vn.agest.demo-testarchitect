@@ -1,6 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
-import { extractNumbers } from "@utils/text-helper.util";
+import { TextHelper } from "@utils/text-helper.util";
 import { BasePage } from "@pages/base.page";
 
 export class CartPage extends BasePage {
@@ -46,13 +46,9 @@ export class CartPage extends BasePage {
       .first()
       .inputValue();
 
-    const quantity = extractNumbers(rawText)[0] ?? 0;
+    const quantity = TextHelper.extractNumbers(rawText)[0] ?? 0;
 
     return quantity;
-  }
-
-  async getMessage() {
-    return (await this.messageLocator.textContent()) ?? "";
   }
 
   async clearCart() {
@@ -70,7 +66,7 @@ export class CartPage extends BasePage {
 
   async getCartTotal() {
     const rawText = (await this.cartTotalLocator.textContent()) ?? "";
-    const total = extractNumbers(rawText)[0] ?? 0;
+    const total = TextHelper.extractNumbers(rawText)[0] ?? 0;
 
     return total;
   }

@@ -13,14 +13,13 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@tests/*": ["./tests/*"],
       "@datasets/*": ["./datasets/*"],
       "@pages/*": ["./src/pages/*"],
       "@utils/*": ["./src/utils/*"],
       "@models/*": ["./src/models/*"],
       "@constants/*": ["./src/constants/*"],
-      "@interfaces/*": ["./src/interfaces/*"]
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@fixtures/*": ["./src/fixtures/*"]
     }
   },
   "include": ["**/*.ts", "**/*.js", "**/*.json"],

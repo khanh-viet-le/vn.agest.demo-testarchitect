@@ -2,7 +2,7 @@ import { CategoryConstants } from "@constants/category.constant";
 import { Category } from "@models/category.model";
 import { Product } from "@models/product.model";
 import { Locator, Page } from "@playwright/test";
-import { extractNumbers } from "@utils/text-helper.util";
+import { TextHelper } from "@utils/text-helper.util";
 import { MainMenuItem } from "@constants/main-menu-item.constants";
 
 export abstract class BasePage {
@@ -38,6 +38,7 @@ export abstract class BasePage {
   readonly productsInCartLocator: Locator;
   readonly productTitleInCartLocator: Locator;
   readonly cartTotalPriceLocator: Locator;
+  readonly checkoutButtonLocator: Locator;
 
   // WISHLIST
   readonly wishListCountLocator: Locator;
@@ -105,8 +106,6 @@ export abstract class BasePage {
     this.cartCountLocator = this.page.locator(
       ".header-wrapper span ~ .et-cart-quantity"
     );
-
-    // CART POPUP
     this.productsInCartLocator = this.page
       .locator(".cart-widget-products")
       .getByRole("listitem");
@@ -115,6 +114,9 @@ export abstract class BasePage {
     this.cartTotalPriceLocator = this.page
       .locator(".header-wrapper")
       .locator(".big-coast");
+    this.checkoutButtonLocator = this.page.getByRole("link", {
+      name: "Checkout",
+    });
 
     // WISHLIST
     this.wishListCountLocator = this.mainHeaderLocator.locator(
@@ -190,6 +192,11 @@ export abstract class BasePage {
     await this.getMainMenuItemLocatorByName(menuName).click();
   }
 
+  async navigateToCartPage() {
+    await this.cartCountLocator.click();
+    await this.page.waitForLoadState("networkidle");
+  }
+
   async getCartCount(): Promise<number> {
     await this.cartCountLocator.waitFor({ state: "attached" });
 
@@ -198,13 +205,13 @@ export abstract class BasePage {
     }
 
     const countText = (await this.cartCountLocator.textContent()) ?? "";
-    const count = extractNumbers(countText)[0] ?? 0;
+    const count = TextHelper.extractNumbers(countText)[0] ?? 0;
     return count;
   }
 
   async getCartTotalPrice(): Promise<number> {
     const rawText = (await this.cartTotalPriceLocator.textContent()) ?? "";
-    const totalPrice = extractNumbers(rawText)[0] ?? 0;
+    const totalPrice = TextHelper.extractNumbers(rawText)[0] ?? 0;
 
     return totalPrice;
   }
@@ -222,9 +229,19 @@ export abstract class BasePage {
     );
   }
 
+  async navigateToCheckoutPage() {
+    await this.cartCountLocator.hover();
+    await this.checkoutButtonLocator.click();
+    await this.page.waitForLoadState("load");
+  }
+
+  async navigateToWishlistPage() {
+    await this.wishListCountLocator.click();
+  }
+
   async getWishlistCount() {
     const rawText = (await this.wishListCountLocator.textContent()) ?? "";
 
-    return extractNumbers(rawText).shift() ?? 0;
+    return TextHelper.extractNumbers(rawText).shift() ?? 0;
   }
 }

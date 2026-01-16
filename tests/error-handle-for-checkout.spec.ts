@@ -1,30 +1,35 @@
-import test from "@/fixtures";
+import test from "@fixtures/common.fixture";
 import { IBillingInfoRequiredField } from "@interfaces/billing-info-required-field.interface";
 import { IBillingInfo } from "@interfaces/billing-info.interface";
-import { getDataset } from "@utils/data-helper";
+import { DataHelper } from "@utils/data-helper.util";
 import { expect } from "@playwright/test";
-import { PaymentMethod } from "@/src/constants/payment-method.constants";
+import { PaymentMethod } from "@constants/payment-method.constants";
+import { ShopPage } from "@pages/shop.page";
+import { ProductPage } from "@pages/product.page";
+import { CheckoutPage } from "@pages/checkout.page";
 
-const requiredBillingInfoFields = getDataset<IBillingInfoRequiredField>(
-  "billing-info-required-fields"
-).filter((field) => !field.defaultValue);
+const requiredBillingInfoFields =
+  DataHelper.getDataset<IBillingInfoRequiredField>(
+    "billing-info-required-fields"
+  ).filter((field) => !field.defaultValue);
 
 // User is at checkout
-test.beforeEach(async ({ shopPage, homePage, checkoutPage, page }) => {
-  await shopPage.goto();
-  await homePage.closeSalesPopupIfVisible();
-  await homePage.acceptCookiesIfVisible();
+test.beforeEach(async ({ homePage, page }) => {
+  await homePage.navigateToPageInMainMenu("Shop");
 
-  const productPage = await shopPage.selectFirstAvailableProduct();
+  const shopPage = new ShopPage(page);
+  await shopPage.selectFirstAvailableProduct();
+
+  const productPage = new ProductPage(page);
   await productPage.addToCart();
-
-  await checkoutPage.goto();
-  await page.waitForLoadState();
+  await productPage.navigateToCheckoutPage();
 });
 
 test("TC_06: Verify Error Handling for Mandatory Checkout Fields", async ({
-  checkoutPage,
+  page,
 }) => {
+  const checkoutPage = new CheckoutPage(page);
+
   // 1. Leave mandatory fields (address, payment info) blank
   // 2. Click 'Confirm Order'
   await checkoutPage.placeOrder({
@@ -34,17 +39,24 @@ test("TC_06: Verify Error Handling for Mandatory Checkout Fields", async ({
 
   // 3. Verify error messages
   //   System should highlight missing fields and show an error message
-  expect
-    .soft(await checkoutPage.getMessages())
-    .toHaveLength(requiredBillingInfoFields.length);
+  const messages = await checkoutPage.getMessages();
+  const fields = await checkoutPage.getHighlightedFields();
 
   for (const field of requiredBillingInfoFields) {
     expect
-      .soft(await checkoutPage.isFieldHasError(field.fieldName))
+      .soft(
+        messages.some((message) =>
+          new RegExp(field.fieldName, "i").test(message)
+        )
+      )
       .toBeTruthy();
 
     expect
-      .soft(await checkoutPage.isFieldHighlighted(field.fieldName))
+      .soft(
+        fields.some((fieldText) =>
+          new RegExp(field.fieldName, "i").test(fieldText)
+        )
+      )
       .toBeTruthy();
   }
 });
