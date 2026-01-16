@@ -2,6 +2,7 @@ import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { TextHelper } from "@utils/text-helper.util";
 import { BasePage } from "@pages/base.page";
+import { Product } from "@models/product.model";
 
 export class CartPage extends BasePage {
   readonly productQuantityInputLocatior: Locator;
@@ -54,10 +55,6 @@ export class CartPage extends BasePage {
   async clearCart() {
     this.page.on("dialog", (dialog) => dialog.accept());
     await this.clearCartButtonLocator.click();
-  }
-
-  async isCartEmpty() {
-    return await this.cartEmptyTitleLocator.isVisible();
   }
 
   async proceedToCheckout() {

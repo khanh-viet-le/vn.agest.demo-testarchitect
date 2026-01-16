@@ -194,7 +194,6 @@ export abstract class BasePage {
 
   async navigateToCartPage() {
     await this.cartCountLocator.click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async getCartCount(): Promise<number> {
