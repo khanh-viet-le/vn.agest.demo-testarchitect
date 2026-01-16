@@ -14,30 +14,29 @@ if (!validCredentials) {
 }
 
 // User added the items into cart
-addedToCartTest(
-  "TC_07: Verify Users Can Clear the Shopping Cart",
-  async ({ page }) => {
-    // 1. Open browser and go to https://demo.testarchitect.com/
-    // 2. Login with valid credentials
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(validCredentials.username, validCredentials.password);
-    const myAccountPage = new MyAccountPage(page);
+const test = addedToCartTest;
 
-    // 3. Go to Shopping cart page
-    myAccountPage.navigateToCartPage();
-    const cartPage = new CartPage(page);
+test("TC_07: Verify Users Can Clear the Shopping Cart", async ({ page }) => {
+  // 1. Open browser and go to https://demo.testarchitect.com/
+  // 2. Login with valid credentials
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login(validCredentials.username, validCredentials.password);
+  const myAccountPage = new MyAccountPage(page);
 
-    // 4. Verify items show in table
-    expect.soft(await cartPage.getFirstAvailableProductQuantity()).toBe(1);
+  // 3. Go to Shopping cart page
+  myAccountPage.navigateToCartPage();
+  const cartPage = new CartPage(page);
 
-    // 5. Click on Clear shopping cart
-    await cartPage.clearCart();
+  // 4. Verify items show in table
+  expect.soft(await cartPage.getFirstAvailableProductQuantity()).toBe(1);
 
-    // 6. Verify empty cart page displays
-    // YOUR SHOPPING CART IS EMPTY displays
-    expect(await cartPage.cartEmptyTitleLocator).toHaveText(
-      new RegExp("YOUR SHOPPING CART IS EMPTY", "i")
-    );
-  }
-);
+  // 5. Click on Clear shopping cart
+  await cartPage.clearCart();
+
+  // 6. Verify empty cart page displays
+  // YOUR SHOPPING CART IS EMPTY displays
+  expect(await cartPage.cartEmptyTitleLocator).toHaveText(
+    new RegExp("YOUR SHOPPING CART IS EMPTY", "i")
+  );
+});

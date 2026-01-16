@@ -3,32 +3,34 @@ import { CartPage } from "@pages/cart.page";
 import { expect } from "@playwright/test";
 
 // Product is in cart
-addedToCartTest(
-  "TC_05: Verify Product Quantity Can Be Updated in Cart",
-  async ({ productPage, page }) => {
-    // 1. Navigate to Cart page
-    await productPage.navigateToCartPage();
-    const cartPage = new CartPage(page);
+const test = addedToCartTest;
 
-    const oldCartTotal = await cartPage.getCartTotal();
-    const updatedQuantity = 2;
+test("TC_05: Verify Product Quantity Can Be Updated in Cart", async ({
+  productPage,
+  page,
+}) => {
+  // 1. Navigate to Cart page
+  await productPage.navigateToCartPage();
+  const cartPage = new CartPage(page);
 
-    // 2. Locate quantity field
-    // 3. Change quantity to 2
-    // 4. Click "Update Cart" button
-    await cartPage.updateFirstAvailableProductQuantity(updatedQuantity);
+  const oldCartTotal = await cartPage.getCartTotal();
+  const updatedQuantity = 2;
 
-    // 5. Verify cart updates
-    // - update message should appear
-    expect(cartPage.messageLocator).toHaveText(/Cart updated/);
+  // 2. Locate quantity field
+  // 3. Change quantity to 2
+  // 4. Click "Update Cart" button
+  await cartPage.updateFirstAvailableProductQuantity(updatedQuantity);
 
-    const newQuantity = await cartPage.getFirstAvailableProductQuantity();
-    const newCartTotal = await cartPage.getCartTotal();
+  // 5. Verify cart updates
+  // - update message should appear
+  expect(cartPage.messageLocator).toHaveText(/Cart updated/);
 
-    // - Quantity should update
-    expect.soft(newQuantity).toBe(updatedQuantity);
+  const newQuantity = await cartPage.getFirstAvailableProductQuantity();
+  const newCartTotal = await cartPage.getCartTotal();
 
-    // - Cart total should recalculate
-    expect.soft(newCartTotal).toBe(oldCartTotal * updatedQuantity);
-  }
-);
+  // - Quantity should update
+  expect.soft(newQuantity).toBe(updatedQuantity);
+
+  // - Cart total should recalculate
+  expect.soft(newCartTotal).toBe(oldCartTotal * updatedQuantity);
+});
