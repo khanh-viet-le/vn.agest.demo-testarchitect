@@ -1,6 +1,6 @@
-import test from "@/fixtures";
-import { Category } from "@/src/models/category.model";
-import { getDataset } from "@/src/utils/data-helper";
+import test from "@fixtures/common.fixture";
+import { Category } from "@models/category.model";
+import { getDataset } from "@utils/data-helper";
 import { expect } from "@playwright/test";
 
 const categories = getDataset<string>("main-menu-cats");
@@ -20,15 +20,13 @@ test.describe("TC_03: Verify Main Menu Categories Navigate Correctly", async () 
       await homePage.localeToMainCategoriesMenu();
 
       // 2. Verify all main categories are present:
-      expect
-        .soft(await homePage.isCategoryPresentInMainMenu(category))
-        .toBeTruthy();
+      expect.soft(homePage.getCategoryInMainMenu(category)).toBeVisible();
 
       // 3. Click each category and verify navigation
       const categoryPage = await homePage.navigateToCategoryPage(category);
       const categoryTitle = await categoryPage.getCategoryTitle();
 
-      await expect(categoryTitle).toBe(category.name);
+      expect.soft(categoryTitle).toBe(category.name);
     });
   }
 });

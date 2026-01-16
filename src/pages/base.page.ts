@@ -128,6 +128,14 @@ export abstract class BasePage {
     return mainMenuItemLocator;
   }
 
+  getCategoryInMainMenu(category: Category) {
+    const categoryLinkLocator = this.catMenuItemsLocator.filter({
+      hasText: category.name,
+    });
+
+    return categoryLinkLocator;
+  }
+
   async searchProduct(product: Product) {
     await this.categoryMenuLocator.selectOption({
       label: product.category?.name ?? CategoryConstants.ALL_CATEGORIES,
