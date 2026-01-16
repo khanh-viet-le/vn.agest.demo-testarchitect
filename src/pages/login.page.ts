@@ -1,14 +1,13 @@
 import { Locator, Page } from "@playwright/test";
-import { RouteConstants } from "@constants/route.constants";
+import { AccountPage } from "@pages/account.page";
 
-export class LoginPage {
-  private page: Page;
-  private usernameInputLocator: Locator;
-  private passwordInputLocator: Locator;
-  private loginButtonLocator: Locator;
+export class LoginPage extends AccountPage {
+  readonly usernameInputLocator: Locator;
+  readonly passwordInputLocator: Locator;
+  readonly loginButtonLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.usernameInputLocator = this.page.getByRole("textbox", {
       name: "username",
     });
@@ -18,10 +17,6 @@ export class LoginPage {
     this.loginButtonLocator = this.page.getByRole("button", {
       name: "Log in",
     });
-  }
-
-  async goto() {
-    await this.page.goto(RouteConstants.MY_ACCOUNT);
   }
 
   async login(username: string, password: string) {

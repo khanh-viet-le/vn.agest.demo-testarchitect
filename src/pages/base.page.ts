@@ -2,7 +2,8 @@ import { CategoryConstants } from "@constants/category.constant";
 import { Category } from "@models/category.model";
 import { Product } from "@models/product.model";
 import { Locator, Page } from "@playwright/test";
-import { CategoryPage } from "@pages/category.page";
+import { extractNumbers } from "@utils/text-helper.util";
+import { MainMenuItem } from "@constants/main-menu-item.constants";
 
 export abstract class BasePage {
   protected readonly page: Page;
@@ -31,6 +32,15 @@ export abstract class BasePage {
   readonly categoryMenuLocator: Locator;
   readonly searchInputLocator: Locator;
   readonly searchButtonLocator: Locator;
+
+  //  CART
+  readonly cartCountLocator: Locator;
+  readonly productsInCartLocator: Locator;
+  readonly productTitleInCartLocator: Locator;
+  readonly cartTotalPriceLocator: Locator;
+
+  // WISHLIST
+  readonly wishListCountLocator: Locator;
 
   // MAIN NAVIGATION (BOTTOM HEADER)
   readonly mainNavLocator: Locator;
@@ -91,6 +101,26 @@ export abstract class BasePage {
       "button.search-button"
     );
 
+    // CART
+    this.cartCountLocator = this.page.locator(
+      ".header-wrapper span ~ .et-cart-quantity"
+    );
+
+    // CART POPUP
+    this.productsInCartLocator = this.page
+      .locator(".cart-widget-products")
+      .getByRole("listitem");
+
+    this.productTitleInCartLocator = this.page.locator(".product-title");
+    this.cartTotalPriceLocator = this.page
+      .locator(".header-wrapper")
+      .locator(".big-coast");
+
+    // WISHLIST
+    this.wishListCountLocator = this.mainHeaderLocator.locator(
+      "span ~ .et-wishlist-quantity"
+    );
+
     // MAIN NAVIGATION (BOTTOM HEADER)
     this.mainNavLocator = this.headerLocator.locator(".header-bottom-wrapper");
     this.mainNavItemsLocator = this.mainNavLocator.getByRole("listitem");
@@ -98,7 +128,7 @@ export abstract class BasePage {
     this.catMenuItemsLocator = this.catMenuLocator.getByRole("link");
   }
 
-  abstract goto(): Promise<void>;
+  abstract goto(data?: any): Promise<void>;
 
   async closeSalesPopupIfVisible() {
     if (await this.closeSalesPopupButtonLocator.isVisible()) {
@@ -148,26 +178,53 @@ export abstract class BasePage {
     await this.catMenuLocator.hover();
   }
 
-  async navigateToCategoryPage(category: Category): Promise<CategoryPage> {
+  async navigateToCategoryPage(category: Category) {
     const categoryLinkLocator = this.catMenuItemsLocator.filter({
       hasText: category.name,
     });
 
     await categoryLinkLocator.click();
-
-    return new CategoryPage(this.page);
   }
 
-  async navigateToPageInMainMenu<P>(
-    menuName: string,
-    constructor: (page: Page) => P
-  ): Promise<P> {
-    if (!this.getMainMenuItemLocatorByName(menuName).isVisible()) {
-      throw new Error(
-        `Menu item '${menuName}' not found in the main navigation`
-      );
-    }
+  async navigateToPageInMainMenu(menuName: MainMenuItem) {
     await this.getMainMenuItemLocatorByName(menuName).click();
-    return constructor(this.page);
+  }
+
+  async getCartCount(): Promise<number> {
+    await this.cartCountLocator.waitFor({ state: "attached" });
+
+    if (!(await this.cartCountLocator.isVisible())) {
+      await this.cartCountLocator.scrollIntoViewIfNeeded();
+    }
+
+    const countText = (await this.cartCountLocator.textContent()) ?? "";
+    const count = extractNumbers(countText)[0] ?? 0;
+    return count;
+  }
+
+  async getCartTotalPrice(): Promise<number> {
+    const rawText = (await this.cartTotalPriceLocator.textContent()) ?? "";
+    const totalPrice = extractNumbers(rawText)[0] ?? 0;
+
+    return totalPrice;
+  }
+
+  async getProductsInCart(): Promise<Product[]> {
+    await this.cartCountLocator.hover();
+    await this.productsInCartLocator.waitFor({ state: "visible" });
+
+    const productTitles = await this.productsInCartLocator
+      .locator(this.productTitleInCartLocator)
+      .allTextContents();
+
+    return productTitles.map(
+      (title) => new Product(title.trim().replace(/\s+/g, " "))
+    );
+  }
+
+  async getWishlistCount() {
+    const rawText = (await this.wishListCountLocator.textContent()) ?? "";
+
+    return extractNumbers(rawText).shift() ?? 0;
   }
 }

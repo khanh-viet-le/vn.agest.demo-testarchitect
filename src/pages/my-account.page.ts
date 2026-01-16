@@ -1,20 +1,17 @@
 import { Locator, Page } from "@playwright/test";
-import { RouteConstants } from "@constants/route.constants";
+import { AccountPage } from "@pages/account.page";
 
-export class MyAccountPage {
-  private page: Page;
-  private titleLocator: Locator;
+export class MyAccountPage extends AccountPage {
+  readonly titleLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.titleLocator = this.page.locator("h1.title");
   }
 
-  async goto() {
-    await this.page.goto(RouteConstants.MY_ACCOUNT);
-  }
-
   async getTitle() {
-    const title = await this.titleLocator.textContent();
+    const title = (await this.titleLocator.textContent()) ?? "";
+
+    return title.trim();
   }
 }

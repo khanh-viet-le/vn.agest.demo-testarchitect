@@ -1,20 +1,19 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
-import { CheckoutPage } from "@pages/checkout.page";
 import { extractNumbers } from "@utils/text-helper.util";
+import { BasePage } from "@pages/base.page";
 
-export class CartPage {
-  private page: Page;
-  private productQuantityInputLocatior: Locator;
-  private updateCartButtonLocator: Locator;
-  private messageLocator: Locator;
-  private clearCartButtonLocator: Locator;
-  private cartEmptyTitleLocator: Locator;
-  private proceedToCheckoutButtonLocator: Locator;
-  private cartTotalLocator: Locator;
+export class CartPage extends BasePage {
+  readonly productQuantityInputLocatior: Locator;
+  readonly updateCartButtonLocator: Locator;
+  readonly messageLocator: Locator;
+  readonly clearCartButtonLocator: Locator;
+  readonly cartEmptyTitleLocator: Locator;
+  readonly proceedToCheckoutButtonLocator: Locator;
+  readonly cartTotalLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.productQuantityInputLocatior = this.page.getByTitle("Qty");
     this.updateCartButtonLocator = this.page.getByRole("button", {
       name: "Update cart",
@@ -65,10 +64,8 @@ export class CartPage {
     return await this.cartEmptyTitleLocator.isVisible();
   }
 
-  async proceedToCheckout(): Promise<CheckoutPage> {
+  async proceedToCheckout() {
     await this.proceedToCheckoutButtonLocator.click();
-
-    return new CheckoutPage(this.page);
   }
 
   async getCartTotal() {

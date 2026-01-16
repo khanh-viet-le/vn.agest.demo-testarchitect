@@ -1,21 +1,16 @@
 import { Locator, Page } from "@playwright/test";
-import { RouteConstants } from "@constants/route.constants";
+import { AccountPage } from "@pages/account.page";
 
-export class RegisterPage {
-  private page: Page;
-  private emailInputLocator: Locator;
-  private registerButtonLocator: Locator;
+export class RegisterPage extends AccountPage {
+  readonly emailInputLocator: Locator;
+  readonly registerButtonLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.emailInputLocator = this.page.locator("#reg_email");
     this.registerButtonLocator = this.page.getByRole("button", {
       name: "Register",
     });
-  }
-
-  async goto() {
-    await this.page.goto(RouteConstants.MY_ACCOUNT);
   }
 
   async register(email: string) {

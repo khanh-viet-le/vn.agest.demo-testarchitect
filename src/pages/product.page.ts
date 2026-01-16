@@ -1,23 +1,19 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
-import { Product } from "@models/product.model";
 import { MessageStatusConstants } from "@constants/message-status.constants";
+import { Product } from "@models/product.model";
 import { extractNumbers } from "@utils/text-helper.util";
+import { BasePage } from "@pages/base.page";
 
-export class ProductPage {
-  private page: Page;
-  private productTitleLocator: Locator;
-  private productPriceLocator: Locator;
-  private amountInputLocator: Locator;
-  private addToCartButtonLocator: Locator;
-  private messageLocator: Locator;
-  private cartCountLocator: Locator;
-  private productsInCartLocator: Locator;
-  private productTitleInCartLocator: Locator;
-  private cartTotalPriceLocator: Locator;
+export class ProductPage extends BasePage {
+  readonly productTitleLocator: Locator;
+  readonly productPriceLocator: Locator;
+  readonly amountInputLocator: Locator;
+  readonly addToCartButtonLocator: Locator;
+  readonly messageLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.productTitleLocator = this.page.locator("h1.product_title");
     this.productPriceLocator = this.page.locator("h1.product_title ~ .price");
 
@@ -26,19 +22,6 @@ export class ProductPage {
       name: "Add to Cart",
     });
     this.messageLocator = this.page.locator(".et-notify");
-    this.cartCountLocator = this.page.locator(
-      ".header-wrapper span ~ .et-cart-quantity"
-    );
-
-    // CART POPUP
-    this.productsInCartLocator = this.page
-      .locator(".cart-widget-products")
-      .getByRole("listitem");
-
-    this.productTitleInCartLocator = this.page.locator(".product-title");
-    this.cartTotalPriceLocator = this.page
-      .locator(".header-wrapper")
-      .locator(".big-coast");
   }
 
   async goto(product: Product) {
@@ -60,19 +43,6 @@ export class ProductPage {
     return status;
   }
 
-  async getProductsInCart(): Promise<Product[]> {
-    await this.cartCountLocator.hover();
-    await this.productsInCartLocator.waitFor({ state: "visible" });
-
-    const productTitles = await this.productsInCartLocator
-      .locator(this.productTitleInCartLocator)
-      .allTextContents();
-
-    return productTitles.map(
-      (title) => new Product(title.trim().replace(/\s+/g, " "))
-    );
-  }
-
   async getProduct(): Promise<Product> {
     await this.productTitleLocator.waitFor({ timeout: 10000 });
     const title = (await this.productTitleLocator.textContent()) ?? "";
@@ -84,24 +54,5 @@ export class ProductPage {
     const product = new Product(title);
     product.price = price;
     return product;
-  }
-
-  async getCartCount(): Promise<number> {
-    await this.cartCountLocator.waitFor({ state: "attached" });
-
-    if (!(await this.cartCountLocator.isVisible())) {
-      await this.cartCountLocator.scrollIntoViewIfNeeded();
-    }
-
-    const countText = (await this.cartCountLocator.textContent()) ?? "";
-    const count = extractNumbers(countText)[0] ?? 0;
-    return count;
-  }
-
-  async getCartTotalPrice(): Promise<number> {
-    const rawText = (await this.cartTotalPriceLocator.textContent()) ?? "";
-    const totalPrice = extractNumbers(rawText)[0] ?? 0;
-
-    return totalPrice;
   }
 }

@@ -1,15 +1,14 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
-import { ProductPage } from "@pages/product.page";
-import { Product } from "@models/product.model";
+import { BasePage } from "@pages/base.page";
 
-export class ShopPage {
-  private page: Page;
-  private productItemLocator: Locator;
-  private productTitleLocator: Locator;
+export class ShopPage extends BasePage {
+  readonly productItemLocator: Locator;
+  readonly productTitleLocator: Locator;
+  readonly wishListIconLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.productItemLocator = this.page
       .locator(".products")
       .locator(".product");
@@ -17,26 +16,25 @@ export class ShopPage {
     this.productTitleLocator = this.productItemLocator
       .locator(".product-title")
       .getByRole("link");
+    this.wishListIconLocator = this.page.locator(".add_to_wishlist");
   }
 
   async goto() {
     await this.page.goto(RouteConstants.SHOP);
   }
 
-  async selectProduct(product: Product): Promise<ProductPage> {
-    await this.productTitleLocator
-      .filter({
-        hasText: product.title,
-      })
-      .click();
-
-    return new ProductPage(this.page);
-  }
-
-  async selectFirstAvailableProduct(): Promise<ProductPage> {
+  async selectFirstAvailableProduct() {
     await this.productTitleLocator.first().click();
     await this.page.waitForLoadState("networkidle");
+  }
 
-    return new ProductPage(this.page);
+  async addFistAvailableProductToWishList() {
+    const thisProductLocator = this.productTitleLocator.first();
+    await thisProductLocator.hover();
+    const thisWishListIconLocator = thisProductLocator.locator(
+      this.wishListIconLocator
+    );
+    await thisWishListIconLocator.click();
+    await thisWishListIconLocator.waitFor({ state: "visible" });
   }
 }
