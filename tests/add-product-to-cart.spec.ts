@@ -1,18 +1,20 @@
-import test from "@/fixtures";
+import test from "@fixtures/common.fixture";
 import { MessageStatusConstants } from "@constants/message-status.constants";
 import { expect } from "@playwright/test";
+import { ShopPage } from "@pages/shop.page";
+import { ProductPage } from "@pages/product.page";
 
 test("TC_04: Verify Product Can Be Added to Shopping Cart", async ({
-  shopPage,
   homePage,
+  page,
 }) => {
   // 1. Navigate to Shop page
-  await shopPage.goto();
-  await homePage.closeSalesPopupIfVisible();
-  await homePage.acceptCookiesIfVisible();
+  await homePage.navigateToPageInMainMenu("Shop");
+  const shopPage = new ShopPage(page);
 
   // 2. Select any available product
-  const productPage = await shopPage.selectFirstAvailableProduct();
+  await shopPage.selectFirstAvailableProduct();
+  const productPage = new ProductPage(page);
   const oldCartCount = await productPage.getCartCount();
   const shownProduct = await productPage.getProduct();
 

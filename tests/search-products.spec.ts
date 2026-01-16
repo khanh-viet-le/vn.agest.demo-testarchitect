@@ -1,9 +1,9 @@
 import test from "@fixtures/common.fixture";
 import { Product } from "@models/product.model";
-import { getDataset } from "@utils/data-helper";
+import { DataHelper } from "@utils/data-helper";
 import { expect } from "@playwright/test";
 
-const searchProducts = getDataset<Product>("search-products");
+const searchProducts = DataHelper.getDataset<Product>("search-products");
 
 test.describe("TC_02: Verify Product Search Functionality Works", async () => {
   for (const searchProduct of searchProducts) {
