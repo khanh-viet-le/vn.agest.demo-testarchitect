@@ -1,24 +1,26 @@
-import test from "@/fixtures";
+import test from "@fixtures/common.fixture";
+import { CartPage } from "@pages/cart.page";
+import { ProductPage } from "@pages/product.page";
+import { ShopPage } from "@pages/shop.page";
 import { expect } from "@playwright/test";
 
-test.beforeEach(async ({ shopPage, homePage }) => {
+test.beforeEach(async ({ homePage, page }) => {
   // Product is in cart
-  await shopPage.goto();
-  await homePage.closeSalesPopupIfVisible();
-  await homePage.acceptCookiesIfVisible();
-
-  const productPage = await shopPage.selectFirstAvailableProduct();
+  await homePage.navigateToPageInMainMenu("Shop");
+  const shopPage = new ShopPage(page);
+  await shopPage.selectFirstAvailableProduct();
+  const productPage = new ProductPage(page);
   await productPage.addToCart();
 });
 
 test("TC_05: Verify Product Quantity Can Be Updated in Cart", async ({
-  cartPage,
-  productPage,
+  homePage,
+  page,
 }) => {
   // 1. Navigate to Cart page
-  await cartPage.goto();
+  await homePage.navigateToCartPage();
+  const cartPage = new CartPage(page);
 
-  const oldQuantity = await cartPage.getFirstAvailableProductQuantity();
   const oldCartTotal = await cartPage.getCartTotal();
   const updatedQuantity = 2;
 
@@ -29,7 +31,7 @@ test("TC_05: Verify Product Quantity Can Be Updated in Cart", async ({
 
   // 5. Verify cart updates
   // - update message should appear
-  expect((await cartPage.getMessage()).length).toBeGreaterThan(0);
+  expect(cartPage.messageLocator).toHaveText(/Cart updated/);
 
   const newQuantity = await cartPage.getFirstAvailableProductQuantity();
   const newCartTotal = await cartPage.getCartTotal();
