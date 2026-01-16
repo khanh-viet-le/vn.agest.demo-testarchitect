@@ -1,6 +1,6 @@
 import test from "@fixtures/common.fixture";
 import { Category } from "@models/category.model";
-import { DataHelper } from "@utils/data-helper";
+import { DataHelper } from "@utils/data-helper.util";
 import { expect } from "@playwright/test";
 import { CategoryPage } from "@pages/category.page";
 

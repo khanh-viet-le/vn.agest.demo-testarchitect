@@ -1,6 +1,6 @@
 import test from "@fixtures/common.fixture";
 import { Product } from "@models/product.model";
-import { DataHelper } from "@utils/data-helper";
+import { DataHelper } from "@utils/data-helper.util";
 import { expect } from "@playwright/test";
 
 const searchProducts = DataHelper.getDataset<Product>("search-products");
