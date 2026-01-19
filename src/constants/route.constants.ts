@@ -7,4 +7,5 @@ export enum RouteConstants {
   CHECKOUT = "/checkout",
   MY_ACCOUNT = "/my-account",
   WISHLIST = "/wishlist",
+  MAIL_HOST = "https://www.guerrillamail.com",
 }

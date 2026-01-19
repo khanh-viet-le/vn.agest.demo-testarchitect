@@ -26,6 +26,7 @@ export abstract class BasePage {
   readonly loginOrSignupButtonLocator: Locator;
   readonly socailListsLocator: Locator;
   readonly socialItemLocator: Locator;
+  readonly usernameLocator: Locator;
 
   // MAIN HEADER
   readonly mainHeaderLocator: Locator;
@@ -42,6 +43,7 @@ export abstract class BasePage {
 
   // WISHLIST
   readonly wishListCountLocator: Locator;
+  readonly closeWishlistLocator: Locator;
 
   // MAIN NAVIGATION (BOTTOM HEADER)
   readonly mainNavLocator: Locator;
@@ -84,11 +86,14 @@ export abstract class BasePage {
     this.addressTextLocator = this.topHeaderLocator.locator(
       "//*[contains(@class, 'et_element ') and ./i][2]"
     );
-    this.loginOrSignupButtonLocator = this.topHeaderLocator.getByRole("link", {
+    this.loginOrSignupButtonLocator = this.page.getByRole("link", {
       name: "Log in / Sign up",
     });
     this.socailListsLocator = this.topHeaderLocator.locator(".et-socials");
     this.socialItemLocator = this.socailListsLocator.getByRole("link");
+    this.usernameLocator = this.topHeaderLocator.locator(
+      ".et_b_header-account"
+    );
 
     // MAIN HEADER
     this.mainHeaderLocator = this.headerLocator.locator(".header-main-wrapper");
@@ -122,6 +127,7 @@ export abstract class BasePage {
     this.wishListCountLocator = this.mainHeaderLocator.locator(
       "span ~ .et-wishlist-quantity"
     );
+    this.closeWishlistLocator = this.headerLocator.locator(".et-close");
 
     // MAIN NAVIGATION (BOTTOM HEADER)
     this.mainNavLocator = this.headerLocator.locator(".header-bottom-wrapper");
@@ -239,8 +245,38 @@ export abstract class BasePage {
   }
 
   async getWishlistCount() {
-    const rawText = (await this.wishListCountLocator.textContent()) ?? "";
+    const rawText =
+      (await this.wishListCountLocator.first().textContent()) ?? "";
 
     return TextHelper.extractNumbers(rawText).shift() ?? 0;
+  }
+
+  async getProductsInWishlist(): Promise<Product[] | string> {
+    await this.wishListCountLocator.first().click();
+
+    let result: Product[] | string;
+
+    const emptyTextLocator = this.page.locator(".empty");
+    if (await emptyTextLocator.isVisible()) {
+      result = (await emptyTextLocator.textContent()) ?? "";
+    } else {
+      // logic for getting products here
+      result = [];
+    }
+
+    await this.closeWishlistLocator.first().click();
+
+    return result;
+  }
+
+  async navigateToAccountPage() {
+    await this.loginOrSignupButtonLocator.click();
+    await this.page.waitForLoadState("domcontentloaded");
+  }
+
+  async getUsername() {
+    const rawText = (await this.usernameLocator.textContent()) ?? "";
+
+    return rawText.trim();
   }
 }
