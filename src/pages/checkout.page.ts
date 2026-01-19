@@ -3,25 +3,26 @@ import { RouteConstants } from "@constants/route.constants";
 import { PaymentMethod } from "@constants/payment-method.constants";
 import { IOrderInfo } from "@interfaces/order-info.interface";
 import { IBillingInfo } from "@interfaces/billing-info.interface";
+import { BasePage } from "./base.page";
+import { TextHelper } from "@utils/text-helper.util";
 
-export class CheckoutPage {
-  private page: Page;
-  private placeOrderButtonLocator: Locator;
-  private messageLocator: Locator;
-  private firstNameInputLocator: Locator;
-  private lastNameInputLocatior: Locator;
-  private countryOrRegionInputLocator: Locator;
-  private streetAddressInputLocator: Locator;
-  private townOrCityInputLocator: Locator;
-  private stateInputLocator: Locator;
-  private zipCodeInputLocator: Locator;
-  private phoneInputLocator: Locator;
-  private emailInputLocator: Locator;
-  private orderNumberLocator: Locator;
-  private invalidWrapperLocator: Locator;
+export class CheckoutPage extends BasePage {
+  readonly placeOrderButtonLocator: Locator;
+  readonly messageLocator: Locator;
+  readonly firstNameInputLocator: Locator;
+  readonly lastNameInputLocatior: Locator;
+  readonly countryOrRegionInputLocator: Locator;
+  readonly streetAddressInputLocator: Locator;
+  readonly townOrCityInputLocator: Locator;
+  readonly stateInputLocator: Locator;
+  readonly zipCodeInputLocator: Locator;
+  readonly phoneInputLocator: Locator;
+  readonly emailInputLocator: Locator;
+  readonly orderNumberLocator: Locator;
+  readonly invalidWrapperLocator: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.placeOrderButtonLocator = this.page.getByRole("button", {
       name: "Place order",
     });
@@ -31,10 +32,14 @@ export class CheckoutPage {
 
     this.firstNameInputLocator = this.page.locator("#billing_first_name");
     this.lastNameInputLocatior = this.page.locator("#billing_last_name");
-    this.countryOrRegionInputLocator = this.page.locator("#billing_country");
+    this.countryOrRegionInputLocator = this.page.locator(
+      "#select2-billing_country-container"
+    );
     this.streetAddressInputLocator = this.page.locator("#billing_address_1");
     this.townOrCityInputLocator = this.page.locator("#billing_city");
-    this.stateInputLocator = this.page.locator("#billing_state");
+    this.stateInputLocator = this.page.locator(
+      "#select2-billing_state-container"
+    );
     this.zipCodeInputLocator = this.page.locator("#billing_postcode");
     this.phoneInputLocator = this.page.locator("#billing_phone");
     this.emailInputLocator = this.page.locator("#billing_email");
@@ -47,6 +52,16 @@ export class CheckoutPage {
     await this.page.goto(RouteConstants.CHECKOUT);
   }
 
+  private async selectOption(name: string) {
+    const targetOption = this.page
+      .getByRole("option", {
+        name: new RegExp(name, "i"),
+      })
+      .first();
+    await targetOption.scrollIntoViewIfNeeded();
+    await targetOption.click();
+  }
+
   async addBillingDetails(info: IBillingInfo) {
     if (info.firstName) {
       await this.firstNameInputLocator.fill(info.firstName);
@@ -56,24 +71,19 @@ export class CheckoutPage {
       await this.lastNameInputLocatior.fill(info.lassName);
     }
 
-    // await this.countryOrRegionInputLocator.click();
-    // const countryOrRegionOption =
-    //   await this.countryOrRegionInputLocator.getByText(info.countryOrRegion);
-    // await countryOrRegionOption.scrollIntoViewIfNeeded();
-    // await countryOrRegionOption.click();
+    await this.countryOrRegionInputLocator.first().click();
+    await this.selectOption(info.countryOrRegion);
 
     if (info.streetAddress) {
       await this.streetAddressInputLocator.fill(info.streetAddress);
     }
 
     if (info.townOrCity) {
-      await this.townOrCityInputLocator.fill(info.townOrCity);
+      await this.townOrCityInputLocator.first().fill(info.townOrCity);
     }
 
-    // await this.stateInputLocator.click();
-    // const stateOption = await this.stateInputLocator.getByText(info.state);
-    // await stateOption.scrollIntoViewIfNeeded();
-    // await stateOption.click();
+    await this.stateInputLocator.click();
+    await this.selectOption(info.state);
 
     if (info.zipCode) {
       await this.zipCodeInputLocator.fill(info.zipCode);
@@ -122,19 +132,13 @@ export class CheckoutPage {
       .allTextContents();
   }
 
-  async isFieldHasError(fieldName: string) {
-    const messages = await this.getMessages();
-
-    return !!messages.find((message) => {
-      return message.includes(fieldName);
-    });
-  }
-
   async getOrderNumber() {
-    const rawText = await this.orderNumberLocator.textContent();
-    const orderNumber = rawText
-      ? parseFloat(rawText.replace(/[^\d.]/g, ""))
-      : 0;
+    await this.orderNumberLocator.waitFor({
+      state: "visible",
+      timeout: 30_000,
+    });
+    const rawText = (await this.orderNumberLocator.textContent()) ?? "";
+    const orderNumber = TextHelper.extractNumbers(rawText).shift() ?? 0;
 
     return orderNumber;
   }
