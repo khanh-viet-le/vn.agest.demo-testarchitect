@@ -43,7 +43,8 @@ export abstract class BasePage {
 
   // WISHLIST
   readonly wishListCountLocator: Locator;
-  readonly closeWishlistLocator: Locator;
+  readonly productTitleInWishlistLocator: Locator;
+  readonly viewWishlistButtonLocator: Locator;
 
   // MAIN NAVIGATION (BOTTOM HEADER)
   readonly mainNavLocator: Locator;
@@ -127,7 +128,14 @@ export abstract class BasePage {
     this.wishListCountLocator = this.mainHeaderLocator.locator(
       "span ~ .et-wishlist-quantity"
     );
-    this.closeWishlistLocator = this.headerLocator.locator(".et-close");
+    this.productTitleInWishlistLocator = this.page
+      .locator(".et-mini-content.active")
+      .locator(".cart-widget-products")
+      .locator(".product-title")
+      .getByRole("link");
+    this.viewWishlistButtonLocator = this.page.getByRole("link", {
+      name: "View Wishlist",
+    });
 
     // MAIN NAVIGATION (BOTTOM HEADER)
     this.mainNavLocator = this.headerLocator.locator(".header-bottom-wrapper");
@@ -240,33 +248,25 @@ export abstract class BasePage {
     await this.page.waitForLoadState("load");
   }
 
-  async navigateToWishlistPage() {
-    await this.wishListCountLocator.click();
-  }
-
   async getWishlistCount() {
+    await this.wishListCountLocator.first().waitFor({ state: "visible" });
     const rawText =
       (await this.wishListCountLocator.first().textContent()) ?? "";
 
     return TextHelper.extractNumbers(rawText).shift() ?? 0;
   }
 
-  async getProductsInWishlist(): Promise<Product[] | string> {
+  async getProductsInWishlist(): Promise<Product[]> {
     await this.wishListCountLocator.first().click();
 
-    let result: Product[] | string;
+    const productTitles =
+      await this.productTitleInWishlistLocator.allTextContents();
+    const products = productTitles.map((title) => new Product(title.trim()));
 
-    const emptyTextLocator = this.page.locator(".empty");
-    if (await emptyTextLocator.isVisible()) {
-      result = (await emptyTextLocator.textContent()) ?? "";
-    } else {
-      // logic for getting products here
-      result = [];
-    }
+    // Close wishlist popup by clicking outside
+    await this.page.mouse.click(10, 10);
 
-    await this.closeWishlistLocator.first().click();
-
-    return result;
+    return products;
   }
 
   async navigateToAccountPage() {
