@@ -1,6 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 import { RouteConstants } from "@constants/route.constants";
 import { BasePage } from "@pages/base.page";
+import { Product } from "@models/product.model";
 
 export class ShopPage extends BasePage {
   readonly productItemLocator: Locator;
@@ -30,11 +31,13 @@ export class ShopPage extends BasePage {
 
   async addFistAvailableProductToWishList() {
     const thisProductLocator = this.productTitleLocator.first();
+    const title = (await thisProductLocator.textContent()) ?? "";
+
     await thisProductLocator.hover();
-    const thisWishListIconLocator = thisProductLocator.locator(
-      this.wishListIconLocator
-    );
-    await thisWishListIconLocator.click();
+    const thisWishListIconLocator = this.wishListIconLocator.first();
     await thisWishListIconLocator.waitFor({ state: "visible" });
+    await thisWishListIconLocator.click();
+
+    return new Product(title);
   }
 }
