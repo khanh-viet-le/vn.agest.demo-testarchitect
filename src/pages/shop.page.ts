@@ -26,7 +26,6 @@ export class ShopPage extends BasePage {
 
   async selectFirstAvailableProduct() {
     await this.productTitleLocator.first().click();
-    await this.page.waitForLoadState("networkidle");
   }
 
   async addFistAvailableProductToWishList() {

@@ -58,7 +58,6 @@ export class CheckoutPage extends BasePage {
         name: new RegExp(name, "i"),
       })
       .first();
-    await targetOption.scrollIntoViewIfNeeded();
     await targetOption.click();
   }
 
@@ -71,8 +70,11 @@ export class CheckoutPage extends BasePage {
       await this.lastNameInputLocatior.fill(info.lassName);
     }
 
-    await this.countryOrRegionInputLocator.first().click();
-    await this.selectOption(info.countryOrRegion);
+    if (info.countryOrRegion) {
+      await this.countryOrRegionInputLocator.first().click();
+      await this.selectOption(info.countryOrRegion);
+      await this.countryOrRegionInputLocator.first().click();
+    }
 
     if (info.streetAddress) {
       await this.streetAddressInputLocator.fill(info.streetAddress);
@@ -82,8 +84,11 @@ export class CheckoutPage extends BasePage {
       await this.townOrCityInputLocator.first().fill(info.townOrCity);
     }
 
-    await this.stateInputLocator.click();
-    await this.selectOption(info.state);
+    if (info.state) {
+      await this.stateInputLocator.click();
+      await this.selectOption(info.state);
+      await this.stateInputLocator.click();
+    }
 
     if (info.zipCode) {
       await this.zipCodeInputLocator.fill(info.zipCode);

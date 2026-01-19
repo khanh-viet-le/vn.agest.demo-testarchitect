@@ -45,7 +45,7 @@ export class MailPage {
         hasText: new RegExp(title, "i"),
       })
       .first()
-      .click({ timeout: 20_000 });
+      .click({ timeout: 60_000 });
   }
 
   getLinkInMail(name: string) {

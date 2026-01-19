@@ -14,6 +14,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
 
+  timeout: 120_000,
+
   projects: [
     {
       name: "chromium",

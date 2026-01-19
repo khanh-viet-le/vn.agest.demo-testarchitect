@@ -23,8 +23,6 @@ test("TC_09: Verify New User Can Register Successfully", async ({
   page,
   context,
 }) => {
-  test.setTimeout(90_000);
-
   // 1. Click "Log in / Sign up" link
   await homePage.navigateToAccountPage();
   const registerPage = new RegisterPage(page);

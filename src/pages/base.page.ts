@@ -208,6 +208,7 @@ export abstract class BasePage {
 
   async navigateToCartPage() {
     await this.cartCountLocator.click();
+    await this.page.reload();
   }
 
   async getCartCount(): Promise<number> {

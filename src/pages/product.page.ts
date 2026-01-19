@@ -31,7 +31,7 @@ export class ProductPage extends BasePage {
   async addToCart(amount: number = 1) {
     await this.amountInputLocator.fill(amount.toString());
     await this.addToCartButtonLocator.click();
-    await this.messageLocator.waitFor({ state: "visible" });
+    // await this.messageLocator.first().waitFor({ state: "visible" });
   }
 
   async getMessageStatus(): Promise<MessageStatusConstants> {

@@ -25,9 +25,8 @@ export class CartPage extends BasePage {
       level: 1,
       name: "YOUR SHOPPING CART IS EMPTY",
     });
-    this.proceedToCheckoutButtonLocator = this.page.getByRole("link", {
-      name: "Proceed to checkout",
-    });
+    this.proceedToCheckoutButtonLocator =
+      this.page.locator("a.checkout-button");
     this.cartTotalLocator = this.page.locator(".cart-subtotal");
   }
 
@@ -37,9 +36,12 @@ export class CartPage extends BasePage {
 
   async updateFirstAvailableProductQuantity(quatity: number) {
     await this.productQuantityInputLocatior.first().fill(quatity.toString());
-    await this.updateCartButtonLocator.click();
+    await this.productQuantityInputLocatior.first().blur();
 
-    await this.messageLocator.waitFor({ state: "visible" });
+    await this.updateCartButtonLocator.first().waitFor({ state: "visible" });
+    await this.updateCartButtonLocator.first();
+
+    await this.messageLocator.waitFor({ state: "visible", timeout: 20_000 });
   }
 
   async getFirstAvailableProductQuantity(): Promise<number> {
